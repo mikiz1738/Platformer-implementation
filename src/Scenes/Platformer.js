@@ -78,6 +78,12 @@ class Platformer extends Phaser.Scene {
             key: "tilemap_sheet",
             frame: 53
         });
+
+        this.spikes = this.map.createFromObjects("Obstacles", {
+            name: "spikes",
+            key: "tilemap_sheet",
+            frame: 68
+        });
         
 
         // Since createFromObjects returns an array of regular Sprites, we need to convert 
@@ -94,12 +100,16 @@ class Platformer extends Phaser.Scene {
         // Add arcade physics for water
         this.physics.world.enable(this.water, Phaser.Physics.Arcade.STATIC_BODY);
 
+        this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
+
+
         // Create a Phaser group out of the array this.coins
         // This will be used for collision detection below.
         this.flagGroup = this.add.group(this.flags);
 
         this.waterGroup = this.add.group(this.water);
         
+        this.spikeGroup = this.add.group(this.spikes);
 
         // set up player avatar
         my.sprite.player = this.physics.add.sprite(30, 10, "platformer_characters", "tile_0000.png");
@@ -124,6 +134,11 @@ class Platformer extends Phaser.Scene {
         });
 
         this.physics.add.overlap(my.sprite.player, this.waterGroup, (obj1, obj2) => {
+            this.scene.start("gameOver");
+            win = false;
+        });
+
+        this.physics.add.overlap(my.sprite.player, this.spikeGroup, (obj1, obj2) => {
             this.scene.start("gameOver");
             win = false;
         });
